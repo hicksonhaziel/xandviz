@@ -3,7 +3,7 @@ import axios, { AxiosError } from 'axios';
 /**
  * Parsed Pod (pNode) representation used by the frontend
  */
-export interface PNode {
+export interface PNode { 
   id: string;
   pubkey: string;
   version: string;

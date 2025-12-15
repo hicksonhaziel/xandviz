@@ -4,7 +4,7 @@ export interface PNode {
   id: string;
   pubkey: string;
   version: string;
-
+  responseTime: number;
   status: PNodeStatus;
 
   uptime: number;
