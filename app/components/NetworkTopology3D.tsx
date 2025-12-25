@@ -1,4 +1,4 @@
-import React, { useRef, useMemo, useState, useEffect } from 'react';
+import React, { useRef, useMemo, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Text, Line } from '@react-three/drei';
 import * as THREE from 'three';
@@ -125,7 +125,6 @@ const NetworkTopology3D: React.FC<NetworkTopology3DProps> = ({ nodes, onNodeSele
   const [searchQuery, setSearchQuery] = useState('');
   const controlsRef = useRef<any>(null);
 
-  // Dedupe nodes by pubkey or id
   const uniqueNodes = useMemo(() => {
     const seen = new Set();
     return nodes.filter(node => {
@@ -136,7 +135,6 @@ const NetworkTopology3D: React.FC<NetworkTopology3DProps> = ({ nodes, onNodeSele
     });
   }, [nodes]);
 
-  // Generate 3D positions with simulated connections
   const visualizationNodes: PNodeVisualization[] = useMemo(() => {
     return uniqueNodes.map((node, index) => {
       const phi = Math.acos(-1 + (2 * index) / uniqueNodes.length);
@@ -147,7 +145,6 @@ const NetworkTopology3D: React.FC<NetworkTopology3DProps> = ({ nodes, onNodeSele
       const y = radius * Math.sin(theta) * Math.sin(phi);
       const z = radius * Math.cos(phi);
       
-      // Simulate connections to nearby nodes
       const connections = uniqueNodes
         .filter((_, i) => i !== index && Math.random() > 0.7)
         .map(n => n.id)
@@ -166,7 +163,6 @@ const NetworkTopology3D: React.FC<NetworkTopology3DProps> = ({ nodes, onNodeSele
     });
   }, [uniqueNodes]);
 
-  // Generate connection lines
   const connections = useMemo(() => {
     const lines: Array<{
       start: [number, number, number];
@@ -190,7 +186,6 @@ const NetworkTopology3D: React.FC<NetworkTopology3DProps> = ({ nodes, onNodeSele
     return lines;
   }, [visualizationNodes, selectedNode]);
 
-  // Search handler
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     if (!query.trim()) {
@@ -206,7 +201,6 @@ const NetworkTopology3D: React.FC<NetworkTopology3DProps> = ({ nodes, onNodeSele
     if (found && controlsRef.current) {
       setSelectedNode(found.id);
       
-      // Move camera to node
       const [x, y, z] = found.position;
       controlsRef.current.target.set(x, y, z);
       controlsRef.current.update();
@@ -237,7 +231,6 @@ const NetworkTopology3D: React.FC<NetworkTopology3DProps> = ({ nodes, onNodeSele
         <pointLight position={[10, 10, 10]} intensity={1} />
         <pointLight position={[-10, -10, -10]} intensity={0.5} color="#8b5cf6" />
         
-        {/* Connection lines */}
         {connections.map((conn, i) => (
           <ConnectionLine
             key={`conn-${i}`}
@@ -247,7 +240,6 @@ const NetworkTopology3D: React.FC<NetworkTopology3DProps> = ({ nodes, onNodeSele
           />
         ))}
         
-        {/* Nodes */}
         {visualizationNodes.map(node => (
           <NodeSphere
             key={node.pubkey || node.id}
@@ -269,16 +261,16 @@ const NetworkTopology3D: React.FC<NetworkTopology3DProps> = ({ nodes, onNodeSele
         />
       </Canvas>
       
-      {/* Search bar */}
-      <div className="absolute top-4 left-4 right-4 flex justify-center">
-        <div className="relative w-full max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+      {/* Search bar - Responsive */}
+      <div className="absolute top-2 md:top-4 left-2 md:left-4 right-2 md:right-4 flex justify-center z-10">
+        <div className="relative w-full max-w-xs md:max-w-md">
+          <Search className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 w-3 h-3 md:w-4 md:h-4 text-gray-400" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => handleSearch(e.target.value)}
-            placeholder="Search by ID or pubkey..."
-            className="w-full pl-10 pr-10 py-2 bg-gray-800 bg-opacity-90 backdrop-blur-sm rounded-lg text-white text-sm border border-gray-700 focus:border-purple-500 focus:outline-none"
+            placeholder="Search node..."
+            className="w-full pl-8 md:pl-10 pr-8 md:pr-10 py-1.5 md:py-2 bg-gray-800 bg-opacity-90 backdrop-blur-sm rounded-lg text-white text-xs md:text-sm border border-gray-700 focus:border-purple-500 focus:outline-none"
           />
           {searchQuery && (
             <button
@@ -286,50 +278,50 @@ const NetworkTopology3D: React.FC<NetworkTopology3DProps> = ({ nodes, onNodeSele
                 setSearchQuery('');
                 setSelectedNode(null);
               }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+              className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
             >
-              <X className="w-4 h-4" />
+              <X className="w-3 h-3 md:w-4 md:h-4" />
             </button>
           )}
         </div>
       </div>
 
-      {/* Selected node info card */}
+      {/* Selected node info card - Responsive & non-overlapping */}
       {selectedNodeData && (
-        <div className="absolute top-20 left-4 bg-gray-800 bg-opacity-95 backdrop-blur-sm rounded-lg p-4 text-white text-sm w-64 border border-gray-700">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-bold text-purple-400">Node Details</h3>
+        <div className="absolute top-12 md:top-16 left-2 md:left-4 bg-gray-800 bg-opacity-95 backdrop-blur-sm rounded-lg p-2 md:p-3 text-white text-xs w-48 md:w-56 border border-gray-700 max-h-[calc(100%-8rem)] overflow-y-auto">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="font-bold text-purple-400 text-xs md:text-sm">Node Details</h3>
             <button
               onClick={() => setSelectedNode(null)}
               className="text-gray-400 hover:text-white"
             >
-              <X className="w-4 h-4" />
+              <X className="w-3 h-3 md:w-4 md:h-4" />
             </button>
           </div>
           
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <div>
-              <span className="text-gray-400">ID:</span>
-              <div className="text-xs font-mono break-all">{selectedNodeData.id}</div>
+              <span className="text-gray-400 text-[10px] md:text-xs">ID:</span>
+              <div className="text-[10px] md:text-xs font-mono break-all">{selectedNodeData.id}</div>
             </div>
             
             {selectedNodeData.pubkey && (
               <div>
-                <span className="text-gray-400">Pubkey:</span>
-                <div className="text-xs font-mono break-all">
-                  {selectedNodeData.pubkey.slice(0, 16)}...
+                <span className="text-gray-400 text-[10px] md:text-xs">Pubkey:</span>
+                <div className="text-[10px] md:text-xs font-mono break-all">
+                  {selectedNodeData.pubkey.slice(0, 12)}...
                 </div>
               </div>
             )}
             
-            <div>
-              <span className="text-gray-400">Score:</span>
-              <span className="ml-2 font-bold text-green-400">{selectedNodeData.score}</span>
+            <div className="flex items-center gap-2">
+              <span className="text-gray-400 text-[10px] md:text-xs">Score:</span>
+              <span className="font-bold text-green-400 text-[10px] md:text-xs">{selectedNodeData.score}</span>
             </div>
             
-            <div>
-              <span className="text-gray-400">Status:</span>
-              <span className={`ml-2 font-semibold ${
+            <div className="flex items-center gap-2">
+              <span className="text-gray-400 text-[10px] md:text-xs">Status:</span>
+              <span className={`font-semibold text-[10px] md:text-xs ${
                 selectedNodeData.status === 'active' ? 'text-green-400' :
                 selectedNodeData.status === 'syncing' ? 'text-yellow-400' :
                 'text-red-400'
@@ -339,62 +331,62 @@ const NetworkTopology3D: React.FC<NetworkTopology3DProps> = ({ nodes, onNodeSele
             </div>
             
             {selectedNodeData.version && (
-              <div>
-                <span className="text-gray-400">Version:</span>
-                <span className="ml-2">{selectedNodeData.version}</span>
+              <div className="flex items-center gap-2">
+                <span className="text-gray-400 text-[10px] md:text-xs">Version:</span>
+                <span className="text-[10px] md:text-xs">{selectedNodeData.version}</span>
               </div>
             )}
             
             {selectedNodeData.storageCommitted && (
-              <div>
-                <span className="text-gray-400">Storage:</span>
-                <span className="ml-2">
-                  {(selectedNodeData.storageCommitted / (1024 * 1024 * 1024)).toFixed(2)} GB
+              <div className="flex items-center gap-2">
+                <span className="text-gray-400 text-[10px] md:text-xs">Storage:</span>
+                <span className="text-[10px] md:text-xs">
+                  {(selectedNodeData.storageCommitted / (1024 * 1024 * 1024)).toFixed(1)} GB
                 </span>
               </div>
             )}
             
-            <div>
-              <span className="text-gray-400">Connections:</span>
-              <span className="ml-2 text-purple-400">{selectedNodeData.connections.length}</span>
+            <div className="flex items-center gap-2">
+              <span className="text-gray-400 text-[10px] md:text-xs">Connections:</span>
+              <span className="text-purple-400 text-[10px] md:text-xs">{selectedNodeData.connections.length}</span>
             </div>
           </div>
         </div>
       )}
       
-      {/* Legend */}
-      <div className="absolute bottom-4 left-4 bg-gray-800 bg-opacity-80 backdrop-blur-sm rounded-lg p-4 text-white text-sm">
-        <div className="font-semibold mb-2">Network Status</div>
-        <div className="space-y-2">
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 rounded-full bg-green-500"></div>
-            <span>Active (90+)</span>
+      {/* Legend - Compact & responsive */}
+      <div className="absolute bottom-2 md:bottom-4 left-2 md:left-4 bg-gray-800 bg-opacity-80 backdrop-blur-sm rounded-lg p-2 md:p-3 text-white text-[10px] md:text-xs max-w-[140px] md:max-w-none">
+        <div className="font-semibold mb-1.5 text-xs md:text-sm">Legend</div>
+        <div className="space-y-1">
+          <div className="flex items-center space-x-1.5">
+            <div className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0"></div>
+            <span className="truncate">Active 90+</span>
           </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-            <span>Active (80-89)</span>
+          <div className="flex items-center space-x-1.5">
+            <div className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0"></div>
+            <span className="truncate">Active 80-89</span>
           </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 rounded-full bg-purple-500"></div>
-            <span>Active (70-79)</span>
+          <div className="flex items-center space-x-1.5">
+            <div className="w-2 h-2 rounded-full bg-purple-500 flex-shrink-0"></div>
+            <span className="truncate">Active 70-79</span>
           </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-            <span>Syncing / Low Score</span>
+          <div className="flex items-center space-x-1.5">
+            <div className="w-2 h-2 rounded-full bg-yellow-500 flex-shrink-0"></div>
+            <span className="truncate">Syncing</span>
           </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 rounded-full bg-red-500"></div>
-            <span>Offline</span>
+          <div className="flex items-center space-x-1.5">
+            <div className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0"></div>
+            <span className="truncate">Offline</span>
           </div>
         </div>
-        <div className="mt-3 pt-3 border-t border-gray-700 text-xs text-gray-400">
-          Click nodes • Drag to rotate • Scroll to zoom
+        <div className="mt-2 pt-2 border-t border-gray-700 text-[9px] md:text-[10px] text-gray-400">
+          Click • Drag • Zoom
         </div>
       </div>
       
-      {/* Stats */}
-      <div className="absolute top-4 right-4 bg-gray-800 bg-opacity-80 backdrop-blur-sm rounded-lg p-4 text-white text-sm">
-        <div className="space-y-1">
+      {/* Stats - Compact & non-overlapping */}
+      <div className="absolute top-12 md:top-16 right-2 md:right-4 bg-gray-800 bg-opacity-80 backdrop-blur-sm rounded-lg p-2 md:p-3 text-white text-[10px] md:text-xs">
+        <div className="space-y-0.5">
           <div>Total: <span className="font-bold">{uniqueNodes.length}</span></div>
           <div>Active: <span className="font-bold text-green-400">
             {uniqueNodes.filter(n => n.status === 'active').length}

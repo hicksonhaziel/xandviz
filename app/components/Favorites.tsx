@@ -97,7 +97,7 @@ export const Favorites: React.FC<FavoritesProps> = ({ darkMode, onClose, onSelec
   const [regions, setRegions] = useState<Record<string, string>>({});
 
   const cardClass = darkMode
-    ? 'bg-gray-800 bg-opacity-50 backdrop-blur-lg'
+    ? 'bg-[#111827] bg-opacity-50 backdrop-blur-lg'
     : 'bg-white bg-opacity-70 backdrop-blur-lg';
   const borderClass = darkMode ? 'border-gray-700' : 'border-gray-200';
   const mutedClass = darkMode ? 'text-gray-400' : 'text-gray-600';

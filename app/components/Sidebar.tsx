@@ -10,7 +10,7 @@ type NavItem = {
   label: string;
   icon: import('lucide-react').LucideIcon;
   routes: string[];
-  visualState?: VisualStatus;
+  visualState?: VisualStatus; 
 };
 
 const navItems: NavItem[] = [

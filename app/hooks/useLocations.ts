@@ -140,7 +140,7 @@ export function useLocations(
     refreshAll,
   };
 }
-
+ 
 /**
  * Hook to fetch a single location
  * @param ip - IP address to fetch location for

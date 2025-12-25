@@ -21,7 +21,7 @@ export interface CreditsResponse {
 }
 
 interface UseCreditsOptions {
-  refreshInterval?: number; // in milliseconds
+  refreshInterval?: number;
   autoRefresh?: boolean;
 }
 
@@ -37,30 +37,63 @@ export function useCredits(options: UseCreditsOptions = {}) {
     try {
       setError(null);
       
-      const response = await fetch('https://podcredits.xandeum.network/api/pods-credits');
+      console.log('Fetching credits from API...');
       
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
+      const response = await fetch('/api/pods-credits', {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+      
+      console.log('Response status:', response.status);
+      
+      if (!response.ok) { 
+        throw new Error(`API returned ${response.status}: ${response.statusText}`);
       }
 
       const jsonData = await response.json();
+      console.log('API Response:', jsonData);
       
-      // Transform data to match our interface
-      // Adjust based on actual API response structure
+      // Check if pods_credits exists
+      if (!jsonData.pods_credits) {
+        throw new Error('Invalid API response: pods_credits not found');
+      }
+      
+      const podsCredits = jsonData.pods_credits;
+      
+      if (!Array.isArray(podsCredits)) {
+        throw new Error('Invalid API response: pods_credits is not an array');
+      }
+      
+      // Sort by credits descending to calculate ranks
+      const sortedPods = [...podsCredits].sort((a, b) => b.credits - a.credits);
+      
+      const nodes: NodeCredits[] = sortedPods.map((pod, index) => ({
+        pubkey: pod.pod_id,
+        id: pod.pod_id,
+        credits: pod.credits || 0,
+        balance: pod.credits || 0,
+        rank: index + 1,
+        lastUpdated: new Date().toISOString(),
+      }));
+
       const transformedData: CreditsResponse = {
-        nodes: Array.isArray(jsonData) 
-          ? jsonData 
-          : jsonData.nodes || [],
-        totalNodes: jsonData.totalNodes || jsonData.nodes?.length || 0,
-        lastUpdate: jsonData.lastUpdate || new Date().toISOString(),
+        nodes,
+        totalNodes: nodes.length,
+        lastUpdate: new Date().toISOString(),
         timestamp: Date.now(),
       };
 
+      console.log('Transformed data:', transformedData);
+      
       setData(transformedData);
       setLastFetch(new Date());
     } catch (err) {
       console.error('Error fetching credits:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch credits');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch credits';
+      console.error('Error details:', errorMessage);
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

@@ -17,7 +17,7 @@ import SearchAndFilters from './components/SearchAndFilters';
 import PNodesTable from './components/PNodesTable';
 import { Favorites } from './components/Favorites';
 import { useSidebarCollapse } from '@/app/hooks/useSidebarCollapse';
-import { AlertCircle, Check, Star } from 'lucide-react';
+import { AlertCircle, Check, Star, WifiOff } from 'lucide-react';
 
 const NetworkTopology3D = dynamic(
   () => import('@/app/components/NetworkTopology3D'),
@@ -56,7 +56,6 @@ const XandViz = () => {
   const [filterStatus, setFilterStatus] = useState(pnodesState.filterStatus);
   const [sortBy, setSortBy] = useState(pnodesState.sortBy);
   const [selectedNode, setSelectedNode] = useState<PNode | null>(pnodesState.selectedNode);
-
   
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -153,27 +152,6 @@ const XandViz = () => {
     return saveState;
   }, [searchTerm, filterStatus, sortBy, selectedNode, setPnodesState]);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setPnodesState(prev => ({
-        ...prev,
-        scrollPosition: window.scrollY,
-      }));
-    };
-
-    let timeoutId: NodeJS.Timeout;
-    const throttledScroll = () => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(handleScroll, 200);
-    };
-
-    window.addEventListener('scroll', throttledScroll);
-    return () => {
-      clearTimeout(timeoutId);
-      window.removeEventListener('scroll', throttledScroll);
-    };
-  }, [setPnodesState]);
-
   const { pNodes, loading, error } = usePNodes();
 
   const filteredNodes = useFilteredPNodes(
@@ -255,23 +233,43 @@ const XandViz = () => {
 
   const exportData = () => exportPNodesCSV(filteredNodes);
 
+  const getHeroText = () => {
+    switch (visualStatus) {
+      case 'pNodes_Explore':
+        return 'Xandria pNodes Explorer';
+      case 'pNodes_Analysis':
+        return 'Xandria pNodes Analytics';
+      case 'Network_3D':
+        return 'Xandria pNodes Network 3D';
+      default:
+        return 'Xandria pNodes Explorer';
+    }
+  };
+
   if (error) {
     return (
       <div className={`min-h-screen ${bgClass} ${textClass} flex items-center justify-center`}>
-        <div className="text-center">
-          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold mb-2">Error Loading Data</h2>
-          <p className={mutedClass}>{error}</p>
+        <div className="text-center max-w-md mx-auto px-4">
+          <WifiOff className="w-16 h-16 text-red-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold mb-2">Connection Error</h2>
+          <p className={`${mutedClass} mb-4`}>
+            Unable to load network data. Please check your internet connection and try again.
+          </p>
+          <div className={`${cardClass} border ${borderClass} rounded-lg p-4 mb-6`}>
+            <p className="text-sm text-red-400">{error}</p>
+          </div>
           <button 
             onClick={() => window.location.reload()}
-            className="mt-4 px-6 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors"
+            className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors font-medium"
           >
-            Retry
+            Retry Connection
           </button>
         </div>
       </div>
     );
   }
+
+  
 
   return (
     <div ref={containerRef} className={`min-h-screen ${bgClass} ${textClass} transition-colors duration-300`}>
@@ -293,6 +291,16 @@ const XandViz = () => {
             />
           ) : (
             <>
+              {/* Hero Section */}
+              <div className="mb-12">
+                <h1 className="text-3xl md:text-4xl font-bold mb-2">
+                  {getHeroText()}
+                </h1>
+                <p className={`text-md ${mutedClass} max-w-2xl`}>
+                  Discover and analyze your pNodes with powerful search and filtering tools
+                </p>
+              </div>
+
               <NetworkOverviewStats
                 loading={loading}
                 networkStats={networkStats}
@@ -301,38 +309,42 @@ const XandViz = () => {
                 mutedClass={mutedClass}
               />
 
-              <SearchAndFilters
-                searchTerm={searchTerm}
-                setSearchTerm={setSearchTerm}
-                filterStatus={filterStatus}
-                setFilterStatus={setFilterStatus}
-                sortBy={sortBy}
-                setSortBy={setSortBy}
-                exportData={exportData}
-                darkMode={darkMode}
-                cardClass={cardClass}
-                borderClass={borderClass}
-                mutedClass={mutedClass}
-              />
+              {visualStatus === 'pNodes_Explore' && (
+                <SearchAndFilters
+                  searchTerm={searchTerm}
+                  setSearchTerm={setSearchTerm}
+                  filterStatus={filterStatus}
+                  setFilterStatus={setFilterStatus}
+                  sortBy={sortBy}
+                  setSortBy={setSortBy}
+                  exportData={exportData}
+                  darkMode={darkMode}
+                  cardClass={cardClass}
+                  borderClass={borderClass}
+                  mutedClass={mutedClass}
+                />
+              )}
 
-              <div className="flex justify-between items-center mb-4 flex-wrap gap-3">
-                <div className=""></div>
+              {visualStatus === 'pNodes_Explore' && (
+                <div className="flex justify-between items-center mb-4 flex-wrap gap-3">
+                  <div className=""></div>
 
-                <button
-                  onClick={() => setShowFavorites(true)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border ${borderClass} ${cardClass} hover:shadow-md transition-all`}
-                >
-                  <Star className={`w-4 h-4 ${favorites.length > 0 ? 'text-yellow-500 fill-yellow-500' : mutedClass}`} />
-                  <span className="text-sm font-medium">Favorites</span>
-                  {favorites.length > 0 && (
-                    <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
-                      darkMode ? 'bg-gray-700' : 'bg-gray-200'
-                    }`}>
-                      {favorites.length}
-                    </span>
-                  )}
-                </button>
-              </div>
+                  <button
+                    onClick={() => setShowFavorites(true)}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg border ${borderClass} ${cardClass} hover:shadow-md transition-all`}
+                  >
+                    <Star className={`w-4 h-4 ${favorites.length > 0 ? 'text-yellow-500 fill-yellow-500' : mutedClass}`} />
+                    <span className="text-sm font-medium">Favorites</span>
+                    {favorites.length > 0 && (
+                      <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                        darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                      }`}>
+                        {favorites.length}
+                      </span>
+                    )}
+                  </button>
+                </div>
+              )}
 
               {visualStatus === 'Network_3D' && (
                 <Suspense fallback={<TopologySkeleton />}>
@@ -349,17 +361,17 @@ const XandViz = () => {
                 </Suspense>
               )}
             
-              {visualStatus === 'pNodes_Analysis' && 
-                <NetworkCharts
-                  versionDistribution={versionDistribution}
-                  statusDistribution={statusDistribution}
-                  darkMode={darkMode}
-                  cardClass={cardClass}
-                  borderClass={borderClass}
-                  mutedClass={mutedClass}
-                  COLORS={COLORS}
-                />
-              }
+              {visualStatus === 'pNodes_Analysis' && (
+                <div>
+                  <NetworkCharts
+                    pNodes={pNodes}
+                    darkMode={darkMode}
+                    cardClass={cardClass}
+                    borderClass={borderClass}
+                    mutedClass={mutedClass}
+                  />
+                </div>
+              )}
 
               {visualStatus === 'pNodes_Explore' && (
                 <PNodesTable

@@ -9,7 +9,7 @@ const Header: React.FC = () => {
   const { darkMode, setDarkMode } = useAppContext();
 
   const cardClass = darkMode 
-    ? 'bg-[#0B0F14] bg-opacity-50 backdrop-blur-lg' 
+    ? 'bg-[#0B0F14]/50 bg-opacity-50 backdrop-blur-md' 
     : 'bg-white bg-opacity-70 backdrop-blur-lg';
   const mutedClass = darkMode ? 'text-gray-400' : 'text-gray-600';
   const borderClass = darkMode ? 'border-gray-800' : 'border-gray-200';
