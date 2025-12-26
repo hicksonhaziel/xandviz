@@ -314,77 +314,7 @@ export default function PNodeCharts({ node, darkMode }: Props) {
         </div>
       </div>
 
-      {/*
-          XANSCORE HISTORY CHART
-    */}
-      <div className={`${cardClass} p-6 rounded-xl border ${borderClass}`}>
-        <div className="flex items-center justify-between mb-1">
-          <h3 className="text-lg font-semibold">XanScore History</h3>
-          <TimePeriodSelector 
-            current={xanScorePeriod} 
-            onChange={(period) => {
-              setXanScorePeriod(period);
-              xanScoreAnalytics.changePeriod(period);
-            }} 
-          />
-        </div>
-        <p className="text-sm text-gray-400 mb-4">
-          XanScore performance over time (max 100)
-        </p>
-
-        {xanScoreAnalytics.loading && !xanScoreAnalytics.data ? (
-          <div className="flex items-center justify-center h-[280px]">
-            <Loader2 className="w-8 h-8 animate-spin text-purple-400" />
-          </div>
-        ) : xanScoreHistoricalData.length === 0 ? (
-          <div className="flex items-center justify-center h-[280px] text-gray-400">
-            No XanScore data available yet
-          </div>
-        ) : (
-          <ResponsiveContainer width="100%" height={280}>
-            <LineChart data={xanScoreHistoricalData}>
-              <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
-              <XAxis 
-                dataKey="timestamp" 
-                stroke="currentColor"
-                tick={{ fontSize: 12 }}
-              />
-              <YAxis 
-                domain={[0, 100]}
-                stroke="currentColor"
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: darkMode ? '#111827' : '#ffffff',
-                  border: `1px solid ${gridStroke}`,
-                  borderRadius: '0.5rem',
-                }}
-                formatter={(value: number) => [`${value} / 100`, 'XanScore']}
-              />
-              
-              {/* Reference line at 50 */}
-              <ReferenceLine
-                y={50}
-                stroke="#64748b"
-                strokeDasharray="4 4"
-                label={{ value: 'Average', fill: '#94a3b8', fontSize: 12 }}
-              />
-              
-              <Line 
-                type="monotone" 
-                dataKey="xanScore" 
-                stroke="#8b5cf6" 
-                strokeWidth={2}
-                dot={{ r: 3 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        )}
-
-        <div className="mt-4 text-sm text-gray-400">
-          💡 XanScore is a comprehensive metric that evaluates node quality based on multiple factors. Scores above 75 indicate excellent performance.
-        </div>
-      </div>
+      
     </div>
   );
 }

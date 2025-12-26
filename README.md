@@ -1,11 +1,10 @@
 #Xandria - Advanced Xandeum pNode Analytics Platform
 
-![XandViz Banner](https://via.placeholder.com/1200x300/7c3aed/ffffff?text=XandViz+Analytics+Platform)
+![XandViz Banner](https://xandria-eight.vercel.app/xandria.png)
 
 > **Submission for:** Xandeum pNode Analytics Platform Bounty  
 > **Built by:** Hickson Haziel 
-> **Live Demo:** [https://xandria-app.vercel.app](https://xandria-app.vercel.app)  
-> **Demo Video:** [Link to video]
+> **Live Demo:** [https://xandria-eight.vercel.app/](https://xandria-eight.vercel.app/)  
 
 ---
 
@@ -152,13 +151,13 @@ Open [http://localhost:3000](http://localhost:3000) to see the application.
 2. **API Integration**
    ```bash
    # Get all pNodes
-   curl https://xandviz.vercel.app/api/pnodes
+   curl https://xandria-eight.vercel.app/api/pnodes
    
    # Get specific pNode
-   curl https://xandviz.vercel.app/api/pnodes/[pubkey]
+   curl https://xandria-eight.vercel.app/api/pnodes/[pubkey]
    
-   # Get network stats
-   curl https://xandviz.vercel.app/api/stats
+   # Get pNode score
+   curl https://https://xandria-eight.vercel.app//api/xandscore
    ```
 
 ---
@@ -203,7 +202,7 @@ Interactive Three.js-powered visualization showing:
 
 ### Real-Time Updates
 
-XandViz maintains WebSocket connection to gossip protocol for:
+Xandria maintains WebSocket connection to gossip protocol for:
 - Live pNode status changes
 - Performance metric updates
 - Network events
@@ -217,81 +216,10 @@ Update frequency: Every 5 seconds
 
 ### Base URL
 ```
-https://xandviz.vercel.app/api
+https://https://xandria-eight.vercel.app/api
 ```
 
-### Endpoints
 
-#### Get All pNodes
-```http
-GET /api/pnodes
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "data": [
-    {
-      "id": "pnode-1",
-      "pubkey": "abc123...",
-      "version": "0.4.0",
-      "status": "active",
-      "score": 95.5,
-      "uptime": 99.8,
-      "responseTime": 45,
-      "storageCapacity": 1000,
-      "storageUsed": 450,
-      "location": "US-East"
-    }
-  ],
-  "count": 50
-}
-```
-
-#### Get Specific pNode
-```http
-GET /api/pnodes/[pubkey]
-```
-
-#### Get Network Statistics
-```http
-GET /api/stats
-```
-
-**Response:**
-```json
-{
-  "total": 50,
-  "active": 45,
-  "syncing": 3,
-  "offline": 2,
-  "avgScore": 87.3,
-  "totalStorage": 50000,
-  "usedStorage": 22500
-}
-```
-
----
-
-## 🧪 Testing
-
-### Unit Tests
-```bash
-npm run test
-```
-
-### E2E Tests
-```bash
-npm run test:e2e
-```
-
-### Performance Tests
-```bash
-npm run lighthouse
-```
-
----
 
 ## 📦 Deployment
 
@@ -361,10 +289,10 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ## 📞 Contact & Support
 
-- **GitHub Issues**: [Report bugs or request features](https://github.com/yourusername/xandviz/issues)
+- **GitHub Issues**: [Report bugs or request features](https://github.com/hicksonhaziel/xandria/issues)
 - **Discord**: Join [Xandeum Discord](https://discord.gg/uqRSmmM5m)
 - **Email**: your.email@example.com
-- **Twitter**: [@yourhandle](https://twitter.com/yourhandle)
+- **Twitter**: [@yourhandle](https://twitter.com/devhickson)
 
 ---
 
@@ -390,56 +318,10 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 
-## 📊 Project Stats
 
-- **Lines of Code**: ~3,500
-- **Components**: 15+
-- **API Endpoints**: 5
-- **Test Coverage**: 85%
-- **Performance Score**: 98/100 (Lighthouse)
-- **Accessibility Score**: 100/100
-
----
-
-## 🏆 Why XandViz Should Win
-
-1. **Exceeds Requirements**: Goes beyond basic pNode display with scoring, 3D viz, and analytics
-2. **Production Ready**: Fully deployed, tested, and documented
-3. **Innovation**: Unique XandScore™ algorithm and 3D network visualization
-4. **User-Centric**: Intuitive UI/UX with operator tools and insights
-5. **Ecosystem Value**: Public API enables third-party integrations
-6. **Maintainable**: Clean code, comprehensive tests, excellent documentation
-7. **Scalable**: Architecture ready for thousands of pNodes
-8. **Open Source**: MIT license, welcoming contributions
 
 ---
 
 **Built with ❤️ for the Xandeum Community**
 
 *"Visualizing the future of decentralized storage, one pNode at a time."*
-
----
-
-## 📸 Screenshots
-
-### Dashboard
-![Dashboard](public/screenshots/dashboard.png)
-
-### 3D Network View
-![3D View](public/screenshots/3d-network.png)
-
-### pNode Details
-![Details](public/screenshots/pnode-details.png)
-
-### Dark Mode
-![Dark Mode](public/screenshots/dark-mode.png)
-
----
-
-## 🔗 Links
-
-- **Live Demo**: https://xandviz.vercel.app
-- **GitHub**: https://github.com/yourusername/xandviz
-- **Demo Video**: [YouTube link]
-- **API Docs**: https://xandviz.vercel.app/docs
-- **Xandeum Network**: https://xandeum.network
