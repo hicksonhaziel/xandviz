@@ -1,11 +1,8 @@
-// app/api/location/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { LocationService } from '@/app/lib/location-service';
 
 export const runtime = 'nodejs';
 
-// GET /api/location?ip=1.2.3.4 - Get single location
-// GET /api/location?ips=1.2.3.4,5.6.7.8 - Get multiple locations
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
@@ -46,7 +43,7 @@ export async function GET(req: NextRequest) {
 
       const locations = await LocationService.getLocations(ips);
       
-      // Convert Map to object for JSON response
+      // Map to object for JSON response
       const result: Record<string, any> = {};
       locations.forEach((value, key) => {
         result[key] = value;
@@ -68,7 +65,6 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// POST /api/location - Batch request with body
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -109,10 +105,10 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// DELETE /api/location - Clear cache (admin only - add auth as needed)
+
 export async function DELETE(req: NextRequest) {
   try {
-    // TODO: Add authentication check here
+    
     
     const cleared = await LocationService.clearLocationCache();
     

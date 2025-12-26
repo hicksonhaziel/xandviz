@@ -1,4 +1,3 @@
-// app/api/pnodes/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { prpcClient } from '@/app/lib/prpc';
 import { calculateXandScore } from '@/app/lib/scoring';
@@ -95,7 +94,7 @@ export async function GET(request: NextRequest) {
       usedStorage: pnodesWithScores.reduce((sum, n) => sum + n.storageUsed, 0),
     };
 
-    // Cache results in background (don't await)
+    // Cache results in background
     Promise.all([
       RedisService.cacheAllNodes(pnodesWithScores),
       RedisService.cacheNetworkStats(stats),

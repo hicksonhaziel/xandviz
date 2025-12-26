@@ -1,4 +1,4 @@
-// app/api/analytics/collect/route.ts
+
 import { NextResponse } from 'next/server'
 import { RedisAnalyticsService } from '@/app/lib/redis-analytics'
 
@@ -53,7 +53,7 @@ interface PNodeDetailResponse {
 }
 
 interface XanScoreResponse {
-  xanScore: {
+  xandscore: {
     score: number
     pubkey: string
   }
@@ -101,16 +101,31 @@ export async function POST(request: Request) {
         )
         const detailData: PNodeDetailResponse = await detailResponse.json()
 
-        // Fetch xanScore
+        // Fetch xanScore - try both possible endpoints
         let xanScore: number | undefined
         try {
-          const xanResponse = await fetch(
+          // Try /api/xandscore/[pubkey] first
+          let xanResponse = await fetch(
             `${BASE_URL}/api/xandscore/${node.pubkey}`
           )
-          const xanData: XanScoreResponse = await xanResponse.json()
-          xanScore = xanData.xanScore?.score
+          
+          if (!xanResponse.ok) {
+            // Try alternative endpoint /api/xanScore/[pubkey]
+            xanResponse = await fetch(
+              `${BASE_URL}/api/xanScore/${node.pubkey}`
+            )
+          }
+          
+          if (xanResponse.ok) {
+            const xanData: XanScoreResponse = await xanResponse.json()
+            // Note: the API returns "xandscore" (lowercase) not "xanScore"
+            xanScore = xanData.xandscore?.score
+            console.log(`XanScore for ${node.pubkey}: ${xanScore}`)
+          } else {
+            console.log(`XanScore API not available for ${node.pubkey} (${xanResponse.status})`)
+          }
         } catch (error) {
-          console.error(`Failed to fetch xanScore for ${node.pubkey}:`, error)
+          console.log(`XanScore fetch failed for ${node.pubkey}, skipping`)
         }
 
         // Extract metrics based on node type (public/private)

@@ -19,7 +19,8 @@ Xandria is a next-generation analytics platform for Xandeum pNodes that goes bey
 - Real-time pNode discovery via gossip protocol
 - Comprehensive pNode information display
 - Advanced search, filter, and sort capabilities
-- Live data updates via WebSocket
+- Live data updates via Redis
+- Historical data
 
 #### **Unique Innovations**
 - **XandScore™** - Proprietary performance scoring algorithm (0-100 scale)
@@ -27,6 +28,7 @@ Xandria is a next-generation analytics platform for Xandeum pNodes that goes bey
 - **Predictive Analytics** - Performance trends and forecasting
 - **Operator Dashboard** - Personalized insights and recommendations
 - **Public API** - RESTful API for ecosystem integration
+- **AI** - AI Analysis
 
 #### **User Experience**
 - Modern glassmorphism design
@@ -50,7 +52,7 @@ Xandria is a next-generation analytics platform for Xandeum pNodes that goes bey
 
 **Backend:**
 - Next.js API routes
-- WebSocket for real-time updates
+- Uptash Redis for real-time updates
 - Axios for HTTP requests
 
 **Deployment:**
@@ -85,7 +87,6 @@ Xandria is a next-generation analytics platform for Xandeum pNodes that goes bey
 │                  Xandeum Network (DevNet)                    │
 │  ┌────────────────────┐        ┌────────────────────┐      │
 │  │  Gossip Protocol   │◄──────►│    pRPC Endpoint   │      │
-│  │  (WebSocket)       │        │    (HTTP/HTTPS)    │      │
 │  └────────────────────┘        └────────────────────┘      │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -104,8 +105,8 @@ Xandria is a next-generation analytics platform for Xandeum pNodes that goes bey
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/xandviz.git
-cd xandviz
+git clone https://github.com/hicksonhaziel/xandria.git
+cd xandria
 
 # Install dependencies
 npm install
@@ -124,12 +125,16 @@ Open [http://localhost:3000](http://localhost:3000) to see the application.
 
 ```env
 # Required
-NEXT_PUBLIC_XANDEUM_RPC_ENDPOINT=https://api.xandeum.network
-NEXT_PUBLIC_GOSSIP_ENDPOINT=wss://gossip.xandeum.network
-NEXT_PUBLIC_NETWORK=devnet
+GROQ_API_KEY=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
+UPSTASH_REDIS_REST_URL="https://national-moth-48062.upstash.io"
+UPSTASH_REDIS_REST_TOKEN="Abu-AAIncDE1OGM3MTMwZDZmYzk0ZWU0YTgwMTRjNzFiZDI4NGY5MHAxNDgwNjI"
 
-# Optional
-NEXT_PUBLIC_ANALYTICS_ID=your-analytics-id
+# Cron Job Authentication
+CRON_SECRET_TOKEN=your_super_secret_token_here_generate_a_strong_one
+
+# API Base URL
+NEXT_PUBLIC_API_URL=http://localhost:3000
+NEXT_PUBLIC_XANDEUM_RPC_ENDPOINT='http://173.212.203.145:6000/rpc'
 ```
 
 ---
@@ -142,6 +147,7 @@ NEXT_PUBLIC_ANALYTICS_ID=your-analytics-id
    - Search for your pNode by ID or pubkey
    - View real-time performance metrics
    - Check your XandScore™ and grade
+   - And data history
 
 2. **Compare Performance**
    - See how you rank against network average

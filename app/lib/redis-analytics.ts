@@ -49,7 +49,7 @@ export class RedisAnalyticsService {
 
     // Clean up old entries (older than 7 days)
     const sevenDaysAgo = timestamp - (SEVEN_DAYS_TTL * 1000)
-    await redis.zremrangebyscore(key, 0, sevenDaysAgo)
+    await redis.zremrangebyscore(key, '-inf', sevenDaysAgo)
   }
 
   // Store pod credits snapshot
@@ -75,7 +75,7 @@ export class RedisAnalyticsService {
 
     // Clean up old entries (older than 7 days)
     const sevenDaysAgo = timestamp - (SEVEN_DAYS_TTL * 1000)
-    await redis.zremrangebyscore(key, 0, sevenDaysAgo)
+    await redis.zremrangebyscore(key, '-inf', sevenDaysAgo)
   }
 
   // Get historical metrics for a node
@@ -88,9 +88,19 @@ export class RedisAnalyticsService {
     const end = endTime || Date.now()
     const start = startTime || (end - SEVEN_DAYS_TTL * 1000)
 
-    const data = await redis.zrangebyscore(key, start, end)
+    const data = await redis.zrange(key, start, end, {
+      byScore: true,
+    })
     
-    return data.map((item) => JSON.parse(item as string)) as NodeMetrics[]
+    if (!data || data.length === 0) return []
+
+    // Handle both string and object responses from Upstash
+    return data.map((item) => {
+      if (typeof item === 'string') {
+        return JSON.parse(item) as NodeMetrics
+      }
+      return item as NodeMetrics
+    })
   }
 
   // Get historical credits for a pod
@@ -103,9 +113,19 @@ export class RedisAnalyticsService {
     const end = endTime || Date.now()
     const start = startTime || (end - SEVEN_DAYS_TTL * 1000)
 
-    const data = await redis.zrangebyscore(key, start, end)
+    const data = await redis.zrange(key, start, end, {
+      byScore: true,
+    })
     
-    return data.map((item) => JSON.parse(item as string)) as PodCredits[]
+    if (!data || data.length === 0) return []
+
+    // Handle both string and object responses from Upstash
+    return data.map((item) => {
+      if (typeof item === 'string') {
+        return JSON.parse(item) as PodCredits
+      }
+      return item as PodCredits
+    })
   }
 
   // Get latest metrics for a node
@@ -115,7 +135,11 @@ export class RedisAnalyticsService {
     
     if (!data || data.length === 0) return null
     
-    return JSON.parse(data[0] as string) as NodeMetrics
+    const item = data[0]
+    if (typeof item === 'string') {
+      return JSON.parse(item) as NodeMetrics
+    }
+    return item as NodeMetrics
   }
 
   // Get latest credits for a pod
@@ -125,7 +149,11 @@ export class RedisAnalyticsService {
     
     if (!data || data.length === 0) return null
     
-    return JSON.parse(data[0] as string) as PodCredits
+    const item = data[0]
+    if (typeof item === 'string') {
+      return JSON.parse(item) as PodCredits
+    }
+    return item as PodCredits
   }
 
   // Get credits change over time period
@@ -166,7 +194,7 @@ export class RedisAnalyticsService {
         member: JSON.stringify(snapshot)
       })
       pipeline.expire(key, TWO_MONTHS_TTL)
-      pipeline.zremrangebyscore(key, 0, sevenDaysAgo)
+      pipeline.zremrangebyscore(key, '-inf', sevenDaysAgo)
     }
 
     await pipeline.exec()
@@ -189,7 +217,7 @@ export class RedisAnalyticsService {
         member: JSON.stringify(snapshot)
       })
       pipeline.expire(key, TWO_MONTHS_TTL)
-      pipeline.zremrangebyscore(key, 0, sevenDaysAgo)
+      pipeline.zremrangebyscore(key, '-inf', sevenDaysAgo)
     }
 
     await pipeline.exec()

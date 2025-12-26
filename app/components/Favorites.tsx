@@ -1,5 +1,3 @@
-// File: app/components/Favorites.tsx
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -13,7 +11,7 @@ interface FavoritesProps {
   onSelectNode: (node: PNode) => void;
 }
 
-// Format uptime: seconds -> "2d 5h" or "5h 30m"
+// Format uptime
 const formatUptime = (seconds: number): string => {
   const days = Math.floor(seconds / 86400);
   const hours = Math.floor((seconds % 86400) / 3600);
@@ -24,7 +22,7 @@ const formatUptime = (seconds: number): string => {
   return `${mins}m`;
 };
 
-// Format storage: bytes -> "1.2 TB" or "340 GB"
+// Format storage
 const formatStorage = (bytes: number): string => {
   const tb = bytes / 1_000_000_000_000;
   const gb = bytes / 1_000_000_000;
@@ -33,7 +31,7 @@ const formatStorage = (bytes: number): string => {
   return `${gb.toFixed(0)} GB`;
 };
 
-// Format last seen: timestamp -> "2m ago" or "5h ago"
+// Format last seen
 const formatLastSeen = (timestamp: number): string => {
   const diff = Date.now() - timestamp;
   const mins = Math.floor(diff / 60000);
@@ -45,7 +43,7 @@ const formatLastSeen = (timestamp: number): string => {
   return `${mins}m ago`;
 };
 
-// Simple cache to avoid re-fetching same IPs
+//  cache 
 const regionCache: Record<string, string> = {};
 
 // Get region from IP - cached version
@@ -58,16 +56,14 @@ const fetchRegion = async (ip: string): Promise<string> => {
   }
   
   try {
-    // Use ip-api.com (free, no key, 45 requests/minute)
     const res = await fetch(`http://ip-api.com/json/${ip}?fields=countryCode`);
     if (!res.ok) return '--';
     
     const data = await res.json();
     
-    // Cache and return country code
+  
     if (data.countryCode) {
       regionCache[ip] = data.countryCode;
-      // Save to localStorage for persistence
       localStorage.setItem('ip_cache', JSON.stringify(regionCache));
       return data.countryCode;
     }
@@ -77,7 +73,6 @@ const fetchRegion = async (ip: string): Promise<string> => {
   }
 };
 
-// Load cache from localStorage on mount
 if (typeof window !== 'undefined') {
   const cached = localStorage.getItem('ip_cache');
   if (cached) {

@@ -1,4 +1,3 @@
-// app/api/xandscore/[nodePubkey]/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { prpcClient } from '@/app/lib/prpc';
 import { calculateXandScore } from '@/app/lib/scoring';
@@ -22,7 +21,7 @@ export async function GET(
 
     const useCache = request.nextUrl.searchParams.get('cache') !== 'false';
 
-    // Try cache first (score-only cache)
+    // Try cache 
     if (useCache) {
       const cachedScore = await RedisService.getNodeScore(nodePubkey);
       if (cachedScore !== null) {
@@ -64,10 +63,10 @@ export async function GET(
     const scoreBreakdown = calculateXandScore(pnode, networkAvg);
     const totalScore = Math.min(100, scoreBreakdown.total);
 
-    // Cache the score
+    // Cache score
     await RedisService.cacheNodeScore(nodePubkey, totalScore);
 
-    // Return only the score in the same format as your mock
+    // Return only the score
     return NextResponse.json({
       xandscore: {
         score: totalScore,

@@ -1,8 +1,9 @@
 'use client';
 
-import { Server, Clock, HardDrive, Activity, Cpu, MapPin } from 'lucide-react';
+import { Server, Clock, HardDrive, MapPin, TrendingUp, TrendingDown } from 'lucide-react';
 import type { PNodeDetailResponse } from '@/app/types/pnode-detail';
 import { useLocation } from '@/app/hooks/useLocations';
+import { useNodeAnalytics } from '@/app/hooks/useNodeAnalytics';
 
 interface Props {
   node: PNodeDetailResponse['data'];
@@ -25,6 +26,14 @@ const formatUptime = (seconds: number): string => {
   return `${hours}h`;
 };
 
+// Format uptime change
+const formatUptimeChange = (seconds: number): string => {
+  const hours = Math.floor(seconds / 3600);
+  const mins = Math.floor((seconds % 3600) / 60);
+  if (hours > 0) return `${hours}h ${mins}m`;
+  return `${mins}m`;
+};
+
 export default function PNodeStatsGrid({ node, darkMode }: Props) {
   const cardClass = darkMode ? 'bg-[#111827]' : 'bg-white';
   const borderClass = darkMode ? 'border-gray-700' : 'border-gray-200';
@@ -33,20 +42,59 @@ export default function PNodeStatsGrid({ node, darkMode }: Props) {
   // Fetch location for this node
   const { location, loading: locationLoading } = useLocation(node.ipAddress);
 
+  // Fetch analytics for uptime and storage (1 hour period)
+  const { data: analyticsData } = useNodeAnalytics(node.pubkey, {
+    refreshInterval: 30000,
+    autoRefresh: true,
+    defaultPeriod: '1h'
+  });
+
+  // Calculate changes
+  const uptimeChange = analyticsData?.stats?.metrics?.uptime?.change || 0;
+  const storageChange = analyticsData?.stats?.metrics?.storagePercent?.change || 0;
+
   const stats = [
     {
       icon: Clock,
       label: 'Uptime',
       value: formatUptime(node.uptime),
-      subtext: `${node.uptime.toLocaleString()}s`,
+      subtext: uptimeChange !== 0 ? (
+        <div className="flex items-center gap-1">
+          {uptimeChange > 0 ? (
+            <TrendingUp className="w-3 h-3 text-green-400" />
+          ) : (
+            <TrendingDown className="w-3 h-3 text-red-400" />
+          )}
+          <span className={uptimeChange > 0 ? 'text-green-400' : 'text-red-400'}>
+            {formatUptimeChange(Math.abs(uptimeChange))} this hour
+          </span>
+        </div>
+      ) : (
+        `${node.uptime.toLocaleString()}s`
+      ),
       color: 'text-blue-400',
+      isCustomSubtext: uptimeChange !== 0,
     },
     {
       icon: HardDrive,
       label: 'Storage',
       value: formatStorage(node.storageCommitted),
-      subtext: `${node.storageUsagePercent.toFixed(2)}% used`,
+      subtext: storageChange !== 0 ? (
+        <div className="flex items-center gap-1">
+          {storageChange > 0 ? (
+            <TrendingUp className="w-3 h-3 text-green-400" />
+          ) : (
+            <TrendingDown className="w-3 h-3 text-red-400" />
+          )}
+          <span className={storageChange > 0 ? 'text-green-400' : 'text-red-400'}>
+            {Math.abs(storageChange).toFixed(3)}% this hour
+          </span>
+        </div>
+      ) : (
+        `${node.storageUsagePercent.toFixed(2)}% used`
+      ),
       color: 'text-purple-400',
+      isCustomSubtext: storageChange !== 0,
     },
     {
       icon: Server,
@@ -79,7 +127,7 @@ export default function PNodeStatsGrid({ node, darkMode }: Props) {
       ),
       subtext: location?.isp || (node.ipAddress || 'No IP'),
       color: 'text-green-400',
-      isCustomValue: true, // Flag to render value as-is
+      isCustomValue: true,
     },
   ];
 
@@ -96,14 +144,14 @@ export default function PNodeStatsGrid({ node, darkMode }: Props) {
           </div>
           <div className="mb-1">
             {stat.isCustomValue ? (
-              // Render custom JSX value
               stat.value
             ) : (
-              // Render string value
               <div className="text-xl font-bold">{stat.value}</div>
             )}
           </div>
-          <div className={`text-xs ${mutedClass}`}>{stat.subtext}</div>
+          <div className={`text-xs ${mutedClass}`}>
+            {stat.isCustomSubtext ? stat.subtext : stat.subtext}
+          </div>
         </div>
       ))}
     </div>

@@ -1,5 +1,3 @@
-// app/api/ai-chat/route.ts
-
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
@@ -22,7 +20,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Prepare comprehensive node context
+    // comprehensive node context
     const details = nodeData.details?.result;
     const credits = nodeData.credits || 0;
     const rank = nodeData.rank || 'N/A';
@@ -45,7 +43,7 @@ export async function POST(request: Request) {
       recommendations: recommendations || []
     };
 
-    // Build context-aware system prompt based on question type
+    // context-aware system prompt based on question type
     let systemPrompt = `You are XandExpert, a friendly AI assistant for Xandeum network node operators. You provide clear, actionable insights about node performance.
 
 Node Context:
@@ -67,7 +65,7 @@ Guidelines:
 - If data shows issues, be honest but encouraging
 - When discussing earnings, be realistic but optimistic`;
 
-    // Customize response based on question type
+    // response based on question type
     let userPrompt = question;
     
     if (question.includes('healthy')) {

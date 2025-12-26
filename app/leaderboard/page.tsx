@@ -1,4 +1,3 @@
-// app/leaderboard/page.tsx
 'use client';
 
 import { useRef, useState } from 'react';
@@ -61,7 +60,7 @@ export default function LeaderboardPage() {
   };
 
   const formatUptime = (uptimeValue: number) => {
-    // If uptime is a percentage (0-100), show it as percentage
+    // If uptime is a percentage (0-100)
     if (uptimeValue <= 100) {
       return `${uptimeValue.toFixed(1)}%`;
     }

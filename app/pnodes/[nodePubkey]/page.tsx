@@ -58,8 +58,8 @@ export default function PNodeDetailPage() {
         
         {/* Loading state */}
         {loading && (
-          <div className="flex flex-col items-center justify-center py-20">
-            <Loader2 className="w-12 h-12 animate-spin text-blue-500 mb-4" />
+          <div className="flex flex-col items-center justify-center py-20 mb-64">
+            <Loader2 className="w-12 h-12 animate-spin text-purple-400 mb-4" />
             <p className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
               Loading pNode information...
             </p>

@@ -19,7 +19,8 @@ import {
   Star,
   Zap,
   Database,
-  Network
+  Network,
+  History
 } from 'lucide-react';
 
 const AboutPage = () => {
@@ -47,6 +48,11 @@ const AboutPage = () => {
       description: "Interactive network topology view"
     },
     {
+      icon: History,
+      title: "Historical Data",
+      description: "Historical data for eassy node performance over time"
+    },
+    {
       icon: Trophy,
       title: "Leaderboards",
       description: "Track top-performing pNodes"
@@ -66,13 +72,6 @@ const AboutPage = () => {
       title: "Data Export",
       description: "Export to CSV for analysis"
     }
-  ];
-
-  const shortcuts = [
-    { keys: ['Ctrl', 'D'], description: 'Toggle Dark/Light Mode' },
-    { keys: ['Ctrl', 'K'], description: 'Quick Search' },
-    { keys: ['Ctrl', 'F'], description: 'Toggle Favorites' },
-    { keys: ['Esc'], description: 'Close Modals' },
   ];
 
   const links = [
@@ -207,35 +206,6 @@ const AboutPage = () => {
             </div>
           </section>
 
-          {/* Keyboard Shortcuts */}
-          <section className="mb-10">
-            <div className="flex items-center gap-2 mb-4">
-              <Keyboard className={`w-5 h-5 ${mutedClass}`} />
-              <h2 className="text-2xl font-semibold">Keyboard Shortcuts</h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {shortcuts.map((shortcut, idx) => (
-                <div 
-                  key={idx}
-                  className={`flex items-center justify-between p-3 rounded-lg border ${borderClass}`}
-                >
-                  <span className={`text-sm ${mutedClass}`}>{shortcut.description}</span>
-                  <div className="flex gap-1">
-                    {shortcut.keys.map((key, kidx) => (
-                      <kbd 
-                        key={kidx}
-                        className={`px-2 py-1 text-xs font-mono rounded ${
-                          darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
-                        } border`}
-                      >
-                        {key}
-                      </kbd>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
 
           {/* Built For */}
           <section className="mb-10">

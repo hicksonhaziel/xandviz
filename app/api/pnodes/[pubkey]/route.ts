@@ -1,4 +1,3 @@
-// app/api/pnodes/[pubkey]/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { prpcClient } from '@/app/lib/prpc';
 import { calculateXandScore } from '@/app/lib/scoring';

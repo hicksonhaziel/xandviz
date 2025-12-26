@@ -1,16 +1,14 @@
-// app/api/analytics/pod/[podId]/route.ts
 import { NextResponse } from 'next/server'
 import { RedisAnalyticsService } from '@/app/lib/redis-analytics'
 
 export async function GET(
   request: Request,
-  { params }: { params: { podId: string } }
+  context: { params: Promise<{ podId: string }> }
 ) {
   try {
-    const { podId } = params
+    const { podId } = await context.params
     const { searchParams } = new URL(request.url)
     
-    // Optional time range parameters
     const startTime = searchParams.get('startTime')
       ? parseInt(searchParams.get('startTime')!)
       : undefined
@@ -19,7 +17,6 @@ export async function GET(
       : undefined
     const period = searchParams.get('period') as '10min' | '1h' | '24h' | '7d' | 'all' | null
 
-    // Calculate time range based on period
     let start = startTime
     let end = endTime || Date.now()
 
@@ -42,11 +39,10 @@ export async function GET(
           start = 0
           break
         default:
-          start = now - (24 * 60 * 60 * 1000) // Default to 24h
+          start = now - (24 * 60 * 60 * 1000)
       }
     }
 
-    // Fetch historical data
     const history = await RedisAnalyticsService.getPodCreditsHistory(
       podId,
       start,
@@ -68,13 +64,11 @@ export async function GET(
       })
     }
 
-    // Calculate credits change for different periods
     const [change10min, change7days] = await Promise.all([
       RedisAnalyticsService.getPodCreditsChange(podId, '10min'),
       RedisAnalyticsService.getPodCreditsChange(podId, '7days')
     ])
 
-    // Calculate overall statistics
     const credits = history.map(h => h.credits)
     const currentCredits = credits[credits.length - 1]
     const previousCredits = credits[0]
@@ -83,7 +77,6 @@ export async function GET(
       ? ((totalChange / previousCredits) * 100) 
       : 0
 
-    // Calculate earning rate (credits per hour)
     const timeRangeHours = (history[history.length - 1].timestamp - history[0].timestamp) / (1000 * 60 * 60)
     const earningRate = timeRangeHours > 0 ? totalChange / timeRangeHours : 0
 

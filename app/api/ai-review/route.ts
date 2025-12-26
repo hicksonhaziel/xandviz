@@ -1,5 +1,3 @@
-// app/api/ai-review/route.ts
-
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
@@ -14,7 +12,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Get API key from environment variable
+    // environment variable
     const apiKey = process.env.GROQ_API_KEY;
 
     if (!apiKey) {
@@ -24,7 +22,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Prepare node data for analysis
+    // node data for analysis
     const details = nodeData.details?.result;
     const nodeInfo = {
       pubkey: nodeData.pubkey,

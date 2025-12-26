@@ -3,6 +3,7 @@
 import {
   Coins,
   TrendingUp,
+  TrendingDown,
   Calendar,
   Award,
   Loader2,
@@ -15,6 +16,7 @@ import {
 } from 'lucide-react';
 
 import { useNodeCredits } from '@/app/hooks/useCredits';
+import { usePodCreditsAnalytics } from '@/app/hooks/usePodCreditsAnalytics';
 import type { PNodeDetailResponse } from '@/app/types/pnode-detail';
 
 interface Props {
@@ -22,8 +24,6 @@ interface Props {
   details: PNodeDetailResponse['data']['details'];
   darkMode: boolean;
 }
-
-/* ---------------- UTILITIES ---------------- */
 
 const formatBytes = (bytes: number): string => {
   if (!bytes) return '0 B';
@@ -37,7 +37,12 @@ const formatNumber = (num: number) => num.toLocaleString();
 const formatTime = (date: Date | null) =>
   date ? date.toLocaleTimeString() : 'N/A';
 
-/* ---------------- COMPONENT ---------------- */
+
+const getMonthFromTimestamp = (timestamp: number): string => {
+  const date = new Date(timestamp);
+  return date.toLocaleString('default', { month: 'long', year: 'numeric' });
+};
+
 
 export default function Metrics({
   nodePubkey,
@@ -46,14 +51,25 @@ export default function Metrics({
 }: Props) {
   const {
     credits,
-    loading,
-    error,
+    loading: creditsLoading,
+    error: creditsError,
     lastFetch,
     refresh,
     totalNodes,
   } = useNodeCredits(nodePubkey, {
-    refreshInterval: 60000,
+    refreshInterval: 30000,
     autoRefresh: true,
+  });
+
+  
+  const podId = nodePubkey; 
+  const { 
+    data: analyticsData, 
+    loading: analyticsLoading 
+  } = usePodCreditsAnalytics(podId, {
+    refreshInterval: 30000,
+    autoRefresh: true,
+    defaultPeriod: '1h'
   });
 
   const cardClass = darkMode ? 'bg-[#0B1220]' : 'bg-white';
@@ -61,10 +77,28 @@ export default function Metrics({
   const mutedClass = darkMode ? 'text-gray-400' : 'text-gray-600';
 
   const result = details?.result;
-  const ramPercent =
-    result && (result.ram_used / result.ram_total) * 100;
+  const ramPercent = result && (result.ram_used / result.ram_total) * 100;
 
-  /* ---------------- DATA ---------------- */
+  // Get credits change data
+  const creditsChange = analyticsData?.stats?.changes?.last10min?.change || 0;
+  const creditsChangePercent = analyticsData?.stats?.changes?.last10min?.percentChange || 0;
+
+  // Calculate monthly earned from first data point
+  const firstDataPoint = analyticsData?.history?.[0];
+  const currentCredits = analyticsData?.stats?.credits?.current || credits?.credits || credits?.balance || 0;
+  const monthlyEarned = firstDataPoint 
+    ? currentCredits - firstDataPoint.credits
+    : credits?.monthlyEarned || credits?.earnedThisMonth || 0;
+
+  // Get month name
+  const currentMonth = firstDataPoint 
+    ? getMonthFromTimestamp(firstDataPoint.timestamp)
+    : new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
+
+  const loading = creditsLoading || analyticsLoading;
+  const error = creditsError;
+
+
 
   const creditStats = [
     {
@@ -72,22 +106,36 @@ export default function Metrics({
       label: 'Credit Balance',
       value: loading
         ? '...'
-        : (credits?.credits || credits?.balance || 0).toLocaleString(),
+        : currentCredits.toLocaleString(),
+      subtext: creditsChange !== 0 && !loading ? (
+        <div className="flex items-center gap-1">
+          {creditsChange > 0 ? (
+            <TrendingUp className="w-3 h-3 text-green-400" />
+          ) : (
+            <TrendingDown className="w-3 h-3 text-red-400" />
+          )}
+          <span className={creditsChange > 0 ? 'text-green-400' : 'text-red-400'}>
+            {Math.abs(creditsChange).toLocaleString()} this hour
+          </span>
+        </div>
+      ) : undefined,
       color: 'text-yellow-400',
+      isCustomSubtext: creditsChange !== 0 && !loading,
     },
     {
       icon: Award,
       label: 'Network Rank',
       value: loading ? '...' : credits?.rank?.toString() || 'N/A',
-      sub: totalNodes ? `of ${totalNodes}` : undefined,
+      subtext: totalNodes ? `of ${totalNodes}` : undefined,
       color: 'text-purple-400',
     },
     {
       icon: TrendingUp,
-      label: 'Monthly Earned',
+      label: `Earned in ${currentMonth.split(' ')[0]}`,
       value: loading
         ? '...'
-        : (credits?.monthlyEarned || credits?.earnedThisMonth || 0).toLocaleString(),
+        : monthlyEarned.toLocaleString(),
+      subtext: `Earning Rate: ${analyticsData?.stats?.credits?.earningRate?.toFixed(1) || '0'}/hr`,
       color: 'text-green-400',
     },
     {
@@ -132,12 +180,12 @@ export default function Metrics({
       ]
     : [];
 
-  /* ---------------- RENDER ---------------- */
+ 
 
   return (
     <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
 
-      {/* ================= CREDITS ================= */}
+      {/* CREDITS */}
       <div className={`${cardClass} p-6 rounded-xl border ${borderClass}`}>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold">Credits & Rewards</h2>
@@ -177,9 +225,11 @@ export default function Metrics({
                 <stat.icon className={`w-5 h-5 ${stat.color}`} />
               </div>
               <div className="text-2xl font-bold">{stat.value}</div>
-              {stat.sub && (
-                <div className={`text-xs ${mutedClass}`}>{stat.sub}</div>
-              )}
+              {stat.isCustomSubtext ? (
+                <div className="text-xs">{stat.subtext}</div>
+              ) : stat.subtext ? (
+                <div className={`text-xs ${mutedClass}`}>{stat.subtext}</div>
+              ) : null}
             </div>
           ))}
         </div>
@@ -191,7 +241,7 @@ export default function Metrics({
         </div>
       </div>
 
-      {/* ================= METRICS ================= */}
+      {/* METRICS */}
       <div className={`${cardClass} p-6 rounded-xl border ${borderClass}`}>
         <h2 className="text-xl font-bold mb-4">Advanced Metrics</h2>
 

@@ -286,7 +286,7 @@ const NetworkTopology3D: React.FC<NetworkTopology3DProps> = ({ nodes, onNodeSele
         </div>
       </div>
 
-      {/* Selected node info card - Responsive & non-overlapping */}
+      {/* Selected node info card*/}
       {selectedNodeData && (
         <div className="absolute top-12 md:top-16 left-2 md:left-4 bg-gray-800 bg-opacity-95 backdrop-blur-sm rounded-lg p-2 md:p-3 text-white text-xs w-48 md:w-56 border border-gray-700 max-h-[calc(100%-8rem)] overflow-y-auto">
           <div className="flex items-center justify-between mb-2">
@@ -354,7 +354,7 @@ const NetworkTopology3D: React.FC<NetworkTopology3DProps> = ({ nodes, onNodeSele
         </div>
       )}
       
-      {/* Legend - Compact & responsive */}
+      {/* Legend*/}
       <div className="absolute bottom-2 md:bottom-4 left-2 md:left-4 bg-gray-800 bg-opacity-80 backdrop-blur-sm rounded-lg p-2 md:p-3 text-white text-[10px] md:text-xs max-w-[140px] md:max-w-none">
         <div className="font-semibold mb-1.5 text-xs md:text-sm">Legend</div>
         <div className="space-y-1">
@@ -384,7 +384,7 @@ const NetworkTopology3D: React.FC<NetworkTopology3DProps> = ({ nodes, onNodeSele
         </div>
       </div>
       
-      {/* Stats - Compact & non-overlapping */}
+      {/* Stats */}
       <div className="absolute top-12 md:top-16 right-2 md:right-4 bg-gray-800 bg-opacity-80 backdrop-blur-sm rounded-lg p-2 md:p-3 text-white text-[10px] md:text-xs">
         <div className="space-y-0.5">
           <div>Total: <span className="font-bold">{uniqueNodes.length}</span></div>

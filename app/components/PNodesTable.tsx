@@ -17,7 +17,7 @@ interface Props {
   isFavorited?: (nodeId: string) => boolean;
 }
 
-// Format uptime: seconds -> "2d 5h" or "5h 30m"
+// Format uptime
 const formatUptime = (seconds: number): string => {
   const days = Math.floor(seconds / 86400);
   const hours = Math.floor((seconds % 86400) / 3600);
@@ -28,7 +28,7 @@ const formatUptime = (seconds: number): string => {
   return `${mins}m`;
 };
 
-// Format storage: bytes -> "1.2 TB" or "340 GB"
+// Format storage
 const formatStorage = (bytes: number): string => {
   const tb = bytes / 1_000_000_000_000;
   const gb = bytes / 1_000_000_000;
@@ -37,7 +37,7 @@ const formatStorage = (bytes: number): string => {
   return `${gb.toFixed(0)} GB`;
 };
 
-// Format last seen: timestamp -> "2m ago" or "5h ago"
+// Format last seen
 const formatLastSeen = (timestamp: number): string => {
   const diff = Date.now() - timestamp;
   const mins = Math.floor(diff / 60000);
@@ -66,7 +66,7 @@ export default function PNodesTable({
   const visibleNodes = nodes.slice(0, visibleCount);
   const ips = visibleNodes.map(node => node.ipAddress).filter(Boolean) as string[];
 
-  // Fetch locations for visible nodes (will re-fetch when ips array changes)
+  // Fetch locations for visible nodes
   const { getLocation } = useLocations(ips);
 
   const hasMore = visibleCount < nodes.length;

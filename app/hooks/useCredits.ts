@@ -1,5 +1,3 @@
-// app/hooks/useCredits.ts
-
 import { useState, useEffect } from 'react';
 
 export interface NodeCredits {

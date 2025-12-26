@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import type { PNodeDetailResponse } from '@/app/types/pnode-detail';
 
 interface UsePNodeInfoOptions {
-  refreshInterval?: number; // In milliseconds
+  refreshInterval?: number; 
   autoRefresh?: boolean;
 }
 

@@ -1,4 +1,3 @@
-// hooks/useLeaderboard.ts
 import { useState, useEffect, useCallback } from 'react';
 
 interface LeaderboardEntry {

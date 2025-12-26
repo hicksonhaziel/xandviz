@@ -1,4 +1,3 @@
-// app/api/leaderboard/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { prpcClient } from '@/app/lib/prpc';
 import { calculateXandScore } from '@/app/lib/scoring';

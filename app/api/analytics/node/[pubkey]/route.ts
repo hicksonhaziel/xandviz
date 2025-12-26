@@ -1,16 +1,15 @@
-// app/api/analytics/node/[pubkey]/route.ts
 import { NextResponse } from 'next/server'
 import { RedisAnalyticsService } from '@/app/lib/redis-analytics'
 
 export async function GET(
   request: Request,
-  { params }: { params: { pubkey: string } }
+  context: { params: Promise<{ pubkey: string }> }
 ) {
   try {
-    const { pubkey } = params
+    const { pubkey } = await context.params
     const { searchParams } = new URL(request.url)
     
-    // Optional time range parameters
+    // time range parameters
     const startTime = searchParams.get('startTime')
       ? parseInt(searchParams.get('startTime')!)
       : undefined
@@ -19,7 +18,7 @@ export async function GET(
       : undefined
     const period = searchParams.get('period') as '1h' | '24h' | '7d' | 'all' | null
 
-    // Calculate time range based on period
+    // time range based on period
     let start = startTime
     let end = endTime || Date.now()
 
@@ -39,11 +38,10 @@ export async function GET(
           start = 0
           break
         default:
-          start = now - (24 * 60 * 60 * 1000) // Default to 24h
+          start = now - (24 * 60 * 60 * 1000)
       }
     }
 
-    // Fetch historical data
     const history = await RedisAnalyticsService.getNodeHistory(
       pubkey,
       start,
@@ -65,7 +63,6 @@ export async function GET(
       })
     }
 
-    // Calculate summary statistics
     const uptimes = history.map(h => h.uptime).filter(u => u !== undefined)
     const scores = history.map(h => h.score).filter(s => s !== undefined)
     const xanScores = history.map(h => h.xanScore).filter(x => x !== undefined)

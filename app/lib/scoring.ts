@@ -38,7 +38,7 @@ export interface NetworkAverage {
  * @returns Complete score breakdown with grade and color
  */
 export function calculateXandScore(
-  pnode: PNode,
+  pnode: PNode, 
   networkAvg: NetworkAverage
 ): ScoreBreakdown {
   // 1. Uptime Score (30 points max)
