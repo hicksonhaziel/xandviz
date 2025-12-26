@@ -125,16 +125,7 @@ Open [http://localhost:3000](http://localhost:3000) to see the application.
 
 ```env
 # Required
-GROQ_API_KEY=
-UPSTASH_REDIS_REST_URL=
-UPSTASH_REDIS_REST_TOKEN=
 
-# Cron Job Authentication
-CRON_SECRET_TOKEN=your_super_secret_token_here_generate_a_strong_one
-
-# API Base URL
-NEXT_PUBLIC_API_URL=your api url
-NEXT_PUBLIC_XANDEUM_RPC_ENDPOINT=
 ```
 
 ---
