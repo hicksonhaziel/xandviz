@@ -5,7 +5,7 @@
 > **Submission for:** Xandeum pNode Analytics Platform Bounty  
 > **Built by:** Hickson Haziel 
 > **Live Demo:** [https://xandria-eight.vercel.app](https://xandria-eight.vercel.app)  
-> **Demo Video:** [Link to video]
+> **Demo Video:** [https://youtu.be/1EVQZr022ew](https://youtu.be/1EVQZr022ew)
 
 ---
 
@@ -548,5 +548,5 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 - **Live Demo**: https://xandria-eight.vercel.app
 - **GitHub**: https://github.com/hicksonhaziel/xandria
-- **Demo Video**: [YouTube link]
+- **Demo Video**: [https://youtu.be/1EVQZr022ew](https://youtu.be/1EVQZr022ew)
 - **Xandeum Network**: https://xandeum.network
