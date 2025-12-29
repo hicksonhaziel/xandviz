@@ -296,7 +296,7 @@ const XandViz = () => {
                   {getHeroText()}
                 </h1>
                 <p className={`text-md ${mutedClass} max-w-2xl`}>
-                  Discover and analyze your pNodes with powerful search and filtering tools
+                  Discover and analyze your Xandeum pNodes with powerful search and filtering tools
                 </p>
               </div>
               
