@@ -87,7 +87,7 @@ const AboutPage = () => {
     },
     {
       title: "Discord",
-      url: "https://discord.gg/xandeum",
+      url: "https://discord.com/invite/mGAxAuwnR9",
       icon: MessageSquare,
     },
     {
