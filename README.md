@@ -493,7 +493,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ## 📞 Contact & Support
 
-- **Discord**: Join [Xandeum Discord](https://discord.gg/uqRSmmM5m)
+- **Discord**: Join [Xandeum Discord](https://discord.com/invite/mGAxAuwnR9)
 - **Email**: hicksonhaziel@gmail.com
 - **Twitter**: [@devhickson](https://twitter.com/devhickson)
 
