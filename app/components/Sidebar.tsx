@@ -1,6 +1,6 @@
 "use client"
 import { useRouter, usePathname } from "next/navigation";
-import { LayoutDashboard, ChartBar, Trophy, Info, Network, BookOpen, Server } from "lucide-react";
+import { ServerIcon, ChartBar, Trophy, Info, Network, BookOpen, Server } from "lucide-react";
 import { useAppContext } from "@/app/context/AppContext";
 
 type VisualStatus = 'pNodes_Explore' | 'Network_3D' | 'pNodes_Analysis';
@@ -15,10 +15,10 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   { 
-    id: "overview", 
-    label: "Overview", 
-    icon: LayoutDashboard, 
-    routes: ["/", "/overview"],
+    id: "pNodes", 
+    label: "pNodes", 
+    icon: ServerIcon, 
+    routes: ["/", "/pnodes/[nodePubkey]"],
     visualState: "pNodes_Explore"
   },
   { 
