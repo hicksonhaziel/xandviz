@@ -8,8 +8,18 @@ export function useFilteredPNodes(
   sortBy: string
 ) {
   return useMemo(() => {
+    // Step 0: Deduplicate nodes by pubkey (keep the one with highest storage/score)
+    const uniqueNodesMap = new Map<string, PNode>();
+    nodes.forEach(node => {
+      const existing = uniqueNodesMap.get(node.pubkey);
+      if (!existing || (node.storageCommitted > existing.storageCommitted)) {
+        uniqueNodesMap.set(node.pubkey, node);
+      }
+    });
+    const uniqueNodes = Array.from(uniqueNodesMap.values());
+    
     // Step 1: Filter by search term and status
-    const filtered = nodes.filter(node => {
+    const filtered = uniqueNodes.filter(node => {
       // Handle search
       const matchesSearch = !searchTerm || (() => {
         const q = searchTerm.toLowerCase();

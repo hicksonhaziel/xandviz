@@ -124,7 +124,7 @@ export default function PNodesTable({
 
                 return (
                   <tr
-                    key={node.id}
+                    key={node.pubkey}
                     onClick={() => handleNodeClick(node)}
                     className={`hover:${darkMode ? 'bg-gray-700' : 'bg-gray-50'} transition-colors cursor-pointer`}
                   >
@@ -296,7 +296,7 @@ export default function PNodesTable({
 
           return (
             <div
-              key={node.id}
+              key={node.pubkey}
               onClick={() => handleNodeClick(node)}
               className={`${cardClass} rounded-lg border ${borderClass} p-4 cursor-pointer hover:${
                 darkMode ? 'bg-gray-700' : 'bg-gray-50'
