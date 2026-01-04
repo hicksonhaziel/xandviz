@@ -23,6 +23,7 @@ interface NodeSphereProps {
 
 const NodeSphere: React.FC<NodeSphereProps> = ({ node, onClick, selected }) => {
   const meshRef = useRef<THREE.Mesh>(null);
+  const textRef = useRef<any>(null);
   const [hovered, setHovered] = useState(false);
 
   useFrame((state) => {
@@ -33,6 +34,11 @@ const NodeSphere: React.FC<NodeSphereProps> = ({ node, onClick, selected }) => {
         const scale = 1 + Math.sin(state.clock.elapsedTime * 2) * 0.05;
         meshRef.current.scale.setScalar(scale);
       }
+    }
+    
+    // Make text face camera
+    if (textRef.current) {
+      textRef.current.quaternion.copy(state.camera.quaternion);
     }
   });
 
@@ -67,6 +73,7 @@ const NodeSphere: React.FC<NodeSphereProps> = ({ node, onClick, selected }) => {
       
       {(hovered || selected) && (
         <Text
+          ref={textRef}
           position={[node.position[0], node.position[1] + 0.5, node.position[2]]}
           fontSize={0.15}
           color="white"
@@ -110,7 +117,7 @@ const ConnectionLine: React.FC<ConnectionLineProps> = ({ start, end, active }) =
       color={active ? '#8b5cf6' : '#374151'}
       lineWidth={active ? 2 : 1}
       transparent
-      opacity={active ? 0.6 : 0.2}
+      opacity={active ? 0.6 : 0.4}
     />
   );
 };
